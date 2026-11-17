@@ -1,6 +1,5 @@
 # Stefan Doerr, 5/2025 UWHAM python implementation based on the R implementation https://cran.r-project.org/web/packages/UWHAM/index.html
 import os
-import yaml
 import argparse
 import glob
 import numpy as np

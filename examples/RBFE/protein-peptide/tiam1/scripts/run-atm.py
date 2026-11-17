@@ -1,13 +1,12 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 import os
 import argparse
 import yaml
-import string
-import pickle
-import numpy as np
 from pathlib import Path
 import pandas as pd
-from rdkit import Chem
-import openmm as mm
 from openmm import *
 from openmm.app import *
 from openmm.unit import *
@@ -16,7 +15,6 @@ from atom_openmm.make_atm_system_from_rcpt_lig import make_system
 from atom_openmm.rbfe_structprep import rbfe_structprep
 from atom_openmm.rbfe_production import rbfe_production
 from atom_openmm.utils.AtomUtils import (
-    AtomUtils,
     calc_displ_vec,
     cm_from_indexes,
     get_indexes_from_query,
@@ -128,8 +126,8 @@ def rbfe_production_data(options):
                 for chunk in reader:
                     count += len(chunk)
             line_counts[file_path] = count
-        except:
-            pass
+        except Exception:
+            logger.debug("suppressed exception", exc_info=True)
     # Find the the minimum count
     if line_counts:
         min_file = min(line_counts, key=line_counts.get)

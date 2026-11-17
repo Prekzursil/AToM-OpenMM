@@ -1,15 +1,13 @@
 # Usage: python create_cntlfile_from_template.py <options>
 # Emilio Gallicchio, 6/2023
 
-import os, sys, fileinput
-import numpy as np
-from time import time
+import fileinput
 
 # following for argument passing tools
 import argparse
 
 # OpenMM components
-from openmm.app import PDBFile, Topology
+from openmm.app import PDBFile
 
 parser = argparse.ArgumentParser()
 

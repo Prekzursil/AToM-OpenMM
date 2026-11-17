@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 def parse_config(config_file):
     if config_file.endswith(".cntl"):
         from configobj import ConfigObj
@@ -63,11 +67,11 @@ def parse_config(config_file):
                 try:
                     keywords[key] = int(keywords[key])
                 except ValueError:
-                    pass
+                    logger.debug("suppressed exception", exc_info=True)
                 try:
                     keywords[key] = float(keywords[key])
                 except ValueError:
-                    pass
+                    logger.debug("suppressed exception", exc_info=True)
 
         for key in (
             "MAX_SAMPLES",

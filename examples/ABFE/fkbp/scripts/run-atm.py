@@ -1,5 +1,8 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 import os
-import sys
 import argparse
 import yaml
 from pathlib import Path
@@ -138,8 +141,8 @@ def rbfe_production_data(options):
                 for chunk in reader:
                     count += len(chunk)
             line_counts[file_path] = count
-        except:
-            pass
+        except Exception:
+            logger.debug("suppressed exception", exc_info=True)
     if line_counts:
         min_file = min(line_counts, key=line_counts.get)
         return line_counts[min_file]

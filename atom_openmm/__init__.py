@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 from importlib.metadata import version, PackageNotFoundError
 import logging.config
 import os
@@ -7,7 +11,7 @@ __curr_dir = os.path.dirname(os.path.abspath(__file__))
 try:
     __version__ = version("atom-openmm")
 except PackageNotFoundError:
-    pass
+    logger.debug("suppressed exception", exc_info=True)
 
 
 try:

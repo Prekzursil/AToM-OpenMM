@@ -4,7 +4,6 @@ from __future__ import print_function
 from __future__ import division
 import sys
 import time
-import os
 from multiprocessing import freeze_support
 
 def rbfe_production(config_file=None, options=None):

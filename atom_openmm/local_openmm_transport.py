@@ -3,22 +3,19 @@ from __future__ import division
 """
 Multiprocessing job transport for AsyncRE/OpenMM
 """
-import os, re, sys, time, shutil, copy, random, signal
+import time, random
 import multiprocessing as mp
 #from multiprocessing import Process, Queue, Event
 import logging
 
-import openmm as mm
 from openmm.app import *
 from openmm import *
 from openmm.unit import *
-from datetime import datetime
 
 from atom_openmm.ommreplica import *
 from atom_openmm.ommsystem import *
 from atom_openmm.ommworker import *
 
-from contextlib import contextmanager
 
 from atom_openmm.transport import Transport
 
@@ -65,7 +62,7 @@ class LocalOpenMMTransport(Transport):
             job = self.replica_to_job[replica]
             if job is None:
                 return None
-        except:
+        except Exception:
             self.logger.warning("clear_resource(): unknown replica id %d",
                                 replica)
 
@@ -77,7 +74,7 @@ class LocalOpenMMTransport(Transport):
         try:
             if self.node_status[nodeid] is not None and self.node_status[nodeid] >= 0: #-1 signals a crashed node that should be left alone
                 self.node_status[nodeid] = None
-        except:
+        except Exception:
             self.logger.warning("clear_resource(): unable to query nodeid %d", nodeid)
             return None
 
@@ -106,7 +103,7 @@ class LocalOpenMMTransport(Transport):
         available = [node for node in range(self.nprocs)
                      if self.node_status[node] is None]
 
-        if available == None or len(available) == 0:
+        if available is None or len(available) == 0:
             return None
         random.shuffle(available)
 
@@ -141,7 +138,7 @@ class LocalOpenMMTransport(Transport):
         while time.time() < when_started + maxtime:
             # find an available node
             node = self._availableNode()
-            while (not self.jobqueue.empty()) and (not node == None):
+            while (not self.jobqueue.empty()) and (not node is None):
 
                 # grabs job on top of the queue
                 replica = self.jobqueue.get()
@@ -257,13 +254,13 @@ class LocalOpenMMTransport(Transport):
         hasCompleted() elsewhere.
         """
         job = self.replica_to_job[replica]
-        if job == None:
+        if job is None:
             # if job has been removed we assume that the replica is done
             return True
         else:
             try:
                 openmm_worker = job['openmm_worker']
-            except:
+            except Exception:
                 #job is in the queue but not yet launched
                 return False
 

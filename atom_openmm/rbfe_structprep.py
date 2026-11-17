@@ -4,20 +4,12 @@ from __future__ import print_function
 from __future__ import division
 import sys
 import time
-import math
-import random
 import logging
-import signal
-import shutil
-import random
 from sys import stdout
-from pathlib import Path
 
-import openmm as mm
 from openmm.app import *
 from openmm import *
 from openmm.unit import *
-from datetime import datetime
 
 import logging
 
@@ -75,7 +67,7 @@ class OMMSystemRBFEnoATM(OMMSystemRBFE):
         
         #target temperature
         temp = self.keywords.get("TEMPERATURES")
-        if temp == None:
+        if temp is None:
             self.temperature = 300.0 * kelvin
         elif isinstance(temp, list):
             self.temperature = float(temp[0]) * kelvin
@@ -139,7 +131,7 @@ def do_mintherm(keywords, logger):
 
     # initial temperature
     initial_temp = keywords.get("INITIAL_TEMPERATURE")
-    if initial_temp == None:
+    if initial_temp is None:
         initial_temperature = 50.0 * kelvin
     else:
         initial_temperature = float(initial_temp) * kelvin
@@ -221,7 +213,7 @@ def do_lambda_annealing(keywords, logger):
 
     #target temperature
     temp = keywords.get("TEMPERATURES")
-    if temp == None:
+    if temp is None:
         temperature = 300.0 * kelvin
     elif isinstance(temp, list):
         temperature = float(temp[0]) * kelvin
@@ -348,7 +340,7 @@ def do_equil(keywords, logger):
 
     #target temperature
     temp = keywords.get("TEMPERATURES")
-    if temp == None:
+    if temp is None:
         temperature = 300.0 * kelvin
     elif isinstance(temp, list):
         temperature = float(temp[0]) * kelvin
@@ -433,7 +425,6 @@ def massage_keywords(keywords, restrain_solutes = True):
 
 
 def rbfe_structprep(config_file=None, options=None):
-    from atom_openmm.utils.AtomUtils import set_directory
     from atom_openmm.utils.config import parse_config
     from pathlib import Path
 

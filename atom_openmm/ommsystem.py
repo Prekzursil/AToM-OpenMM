@@ -1,19 +1,20 @@
 from __future__ import print_function
 from __future__ import division
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 """
 Collects all of the ways that openmm systems are loaded
 """
-import os, re, sys, time, shutil, copy, random, signal, copy
-import numpy as np
-import multiprocessing as mp
+import os, re, sys, copy, copy
 #from multiprocessing import Process, Queue, Event
-import logging
 
 import openmm as mm
 from openmm.app import *
 from openmm import *
 from openmm.unit import *
-from datetime import datetime
 
 from atom_openmm.utils.AtomUtils import AtomUtils, separate14
 
@@ -77,8 +78,8 @@ class OMMSystem(object):
         self.minor_ommversion = int(version[1])
         try:
            self.patch_ommversion = int(version[2])
-        except:
-            pass
+        except Exception:
+            logger.debug("suppressed exception", exc_info=True)
 
         self.v82plus = False
         if (self.major_ommversion > 8) or ( (self.major_ommversion == 8) and (self.minor_ommversion > 1)):
@@ -108,7 +109,7 @@ class OMMSystem(object):
             from AGBNPplugin import AGBNPForce
             gb = AGBNPForce()
         except ImportError:
-            pass
+            logger.debug("suppressed exception", exc_info=True)
 
         #HMASS is set in the system file
         with open(self.systemfile) as input:
@@ -189,7 +190,7 @@ class OMMSystem(object):
     def set_torsion_metaDbias(self,temperature):
         from atom_openmm.utils.config import parse_config
 
-        if self.keywords.get('METADBIAS_DIR') == None:
+        if self.keywords.get('METADBIAS_DIR') is None:
             return
         bias_dirs = self.keywords.get('METADBIAS_DIR')
         bias_offsets = self.keywords.get('METADBIAS_IDXOFFSET')
@@ -881,7 +882,7 @@ class OMMSystemRBFE(OMMSystem):
             if lig2_var_atoms:
                 for i in range(len(lig2_var_atoms)):
                     self.atmforce.setParticleTransformation(lig2_var_atoms[i], ParticleOffsetDisplacement(lig1_attach_atom, lig2_attach_atom))
-        except:
+        except Exception:
             try:
                 # try unofficial Gallicchio-Lab atm-coordinate-swap branch OpenMM 8.2 ATMForce API
                 if lig1_common_atoms:
@@ -896,7 +897,7 @@ class OMMSystemRBFE(OMMSystem):
                 if lig2_var_atoms:
                     for i in range(len(lig2_var_atoms)):
                         self.atmforce.setParticleParameters(lig2_var_atoms[i], lig1_attach_atom, lig2_attach_atom, -1, -1)
-            except:
+            except Exception:
                 self._exit("Variable displacements are not supported by the OpenMM backend")
 
     def set_atmforce(self):
