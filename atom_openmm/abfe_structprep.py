@@ -5,19 +5,12 @@ from __future__ import division
 import sys
 import os
 import time
-import math
-import random
 import logging
-import signal
-import shutil
-import random
 from sys import stdout
 
-import openmm as mm
 from openmm import *
 from openmm.app import *
 from openmm.unit import *
-from datetime import datetime
 
 import logging
 from atom_openmm.ommsystem import *
@@ -35,7 +28,7 @@ class OMMSystemABFEnoATM(OMMSystemABFE):
         
         #target temperature
         temp = self.keywords.get("TEMPERATURES")
-        if temp == None:
+        if temp is None:
             self.temperature = 300.0 * kelvin
         elif isinstance(temp, list):
             self.temperature = float(temp[0]) * kelvin
@@ -72,32 +65,32 @@ class OMMSystemABFEnoATM(OMMSystemABFE):
 def set_platform(keywords):
     platform_properties = {}
     platform_name = keywords.get("OPENMM_PLATFORM")
-    if platform_name == None:
+    if platform_name is None:
         devices = available_computing_devices()
         #first CUDA or HIP device
         for platf in devices:
             if platf['count'] > 0 and platf["name"] in ["CUDA", "HIP"]:
                 platform_name = platf["name"]
                 break
-        if platform_name == None:
+        if platform_name is None:
             #fall back to OpenCL
             for platf in devices:
                 if platf['count'] > 0 and platf["name"] in ["OpenCL"]:
                     platform_name = platf["name"]
                     break
-        if platform_name == None:
+        if platform_name is None:
             #fall back to CPU
             for platf in devices:
                 if platf['count'] > 0 and platf["name"] in ["CPU"]:
                     platform_name = platf["name"]
                     break
-        assert not platform_name == None, "Could not find computing device"
+        assert not platform_name is None, "Could not find computing device"
     if platform_name == "CUDA" or platform_name == "OpenCL" or platform_name == "HIP":
         platform_properties["Precision"] = "mixed"
     if platform_name == "CPU":
         try:
             nthreads = os.environ['OMP_NUM_THREADS']
-        except:
+        except Exception:
             nthreads = 1
         platform_properties["Threads"] = str(nthreads)
     platform = Platform.getPlatformByName(platform_name)
@@ -146,7 +139,7 @@ def do_mintherm(keywords, logger):
     
     # initial temperature
     initial_temp = keywords.get("INITIAL_TEMPERATURE")
-    if initial_temp == None:
+    if initial_temp is None:
         initial_temperature = 50.0 * kelvin
     else:
         initial_temperature = float(initial_temp) * kelvin
@@ -228,7 +221,7 @@ def do_lambda_annealing(keywords, logger):
 
     #target temperature
     temp = keywords.get("TEMPERATURES")
-    if temp == None:
+    if temp is None:
         temperature = 300.0 * kelvin
     elif isinstance(temp, list):
         temperature = float(temp[0]) * kelvin
@@ -354,7 +347,7 @@ def do_equil(keywords, logger):
 
     #target temperature
     temp = keywords.get("TEMPERATURES")
-    if temp == None:
+    if temp is None:
         temperature = 300.0 * kelvin
     elif isinstance(temp, list):
         temperature = float(temp[0]) * kelvin
@@ -437,7 +430,6 @@ def massage_keywords(keywords, restrain_solutes = True):
 
 
 def abfe_structprep(config_file=None, options=None):
-    from atom_openmm.utils.AtomUtils import set_directory
     from atom_openmm.utils.config import parse_config
     from pathlib import Path
     

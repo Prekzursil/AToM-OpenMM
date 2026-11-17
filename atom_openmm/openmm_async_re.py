@@ -2,12 +2,10 @@ from __future__ import print_function
 from __future__ import division
 import os
 import re
-import random
 import math
 import logging
 import signal
 
-import openmm as mm
 from openmm.app import *
 from openmm import *
 from openmm.unit import *
@@ -40,8 +38,8 @@ class openmm_job(JobManager):
         #checkpoint files cannot be trusted
         try:
             os.remove(self.safeckpt_file)
-        except:
-            pass
+        except Exception:
+            logger.debug("suppressed exception", exc_info=True)
             
         # update replica objects of waiting replicas with the current state assignments
         if self.openmm_replicas:
@@ -82,7 +80,7 @@ class openmm_job(JobManager):
         replica = self.openmm_replicas[repl]
         #retrieve previous state if set
         (old_stateid, old_par) =  replica.get_state()
-        if old_stateid != None:
+        if old_stateid is not None:
             old_temperature = old_par['temperature']
         #sets new state
         stateid = self.status[repl]['stateid_current']
@@ -90,7 +88,7 @@ class openmm_job(JobManager):
         replica.set_state(stateid, par)
 
         #rescale velocities (relevant only if state has changed)
-        if old_stateid != None:
+        if old_stateid is not None:
             if stateid != old_stateid:
                 temperature = par['temperature']
                 scale = math.sqrt(temperature/old_temperature)
@@ -110,7 +108,7 @@ class openmm_job(JobManager):
             pot = self._getPot(repl)
             if pot is None:
                 return False
-        except:
+        except Exception:
             return False
         return True
 
@@ -177,9 +175,9 @@ class openmm_job_TRE(openmm_job):
         for i in range(self.nreplicas):
             try:
                 replica = OMMReplicaTRE(i, self.basename, self.service_worker, self.logger, self.keywords)
-            except:
+            except Exception:
                 self._exit("Error creating replica.")
-            if replica.stateid == None:
+            if replica.stateid is None:
                 replica.set_state(i, self.stateparams[i])#initial setting
             self.openmm_replicas.append(replica)
 
@@ -448,9 +446,9 @@ class openmm_job_ABFE(openmm_job_ATM):
         for i in range(self.nreplicas):
             try:
                 replica = OMMReplicaATM(i, self.basename, self.service_worker, self.logger, self.keywords)
-            except:
+            except Exception:
                 self._exit("Error creating replica.")
-            if replica.stateid == None:
+            if replica.stateid is None:
                 replica.set_state(i, self.stateparams[i])#initial setting
             self.openmm_replicas.append(replica)
 
@@ -489,7 +487,7 @@ class openmm_job_RBFE(openmm_job_ATM):
             replica = OMMReplicaATM(i, self.basename, self.service_worker, self.logger, self.keywords)
             #except:
             #    self._exit("Error when creating replica.")
-            if replica.stateid == None:
+            if replica.stateid is None:
                 replica.set_state(i, self.stateparams[i])#initial setting
             self.openmm_replicas.append(replica)
 

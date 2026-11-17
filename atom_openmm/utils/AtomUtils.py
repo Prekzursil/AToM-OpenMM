@@ -5,7 +5,6 @@ import numpy as np
 from contextlib import contextmanager
 from pathlib import Path
 from rdkit import Chem
-from scipy.spatial import distance_matrix
 from scipy.spatial.distance import cdist
 from openmm import version as ommversion
 import openmm as mm
@@ -406,7 +405,7 @@ def numDevices(platform, max_to_test=8):
             found_devices += 1
             # Clean up the context immediately
             del context
-        except:
+        except Exception:
             # If it fails, we've hit the end of the available physical devices
             break
     return found_devices
@@ -828,7 +827,7 @@ class AtomUtils(object):
         expr += "twopi = 2*pi ;"
         expr += "pi = %f" % math.pi
 
-        if self.TorsionalRestraintForce == None:
+        if self.TorsionalRestraintForce is None:
             self.TorsionalRestraintForce = mm.CustomTorsionForce(expr)
             phiforce = self.TorsionalRestraintForce
             phiforce.addPerTorsionParameter("kf")

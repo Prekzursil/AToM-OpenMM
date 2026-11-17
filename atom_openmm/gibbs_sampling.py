@@ -1,11 +1,9 @@
 """Gibbs sampling routines"""
 from __future__ import print_function
 from __future__ import division
-from numpy import zeros, exp, sum, log, asarray
+from numpy import zeros, exp, sum
 from numpy.random import random as _random
 from random import choice
-from itertools import permutations
-import six
 import sys
 
 def _exit(message):

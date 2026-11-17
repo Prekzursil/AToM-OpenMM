@@ -11,9 +11,6 @@ from __future__ import division
 import os
 import sys
 import time
-import pickle
-import random, glob
-import shutil
 import logging, logging.config
 import signal
 
@@ -38,8 +35,8 @@ class JobManager(object):
         try:
             import setproctitle
             setproctitle.setproctitle("AToM %s" % command_file)
-        except:
-            pass
+        except Exception:
+            logger.debug("suppressed exception", exc_info=True)
 
         self._setLogger()
 
@@ -97,8 +94,8 @@ class JobManager(object):
         try:
             for worker in self.openmm_workers:
                 worker.finish()
-        except:
-            pass
+        except Exception:
+            logger.debug("suppressed exception", exc_info=True)
 
     def _signal_handler(self, sig, frame):
         msg = "Termination signal %s detected ... cleaning up." % str(sig)
@@ -138,7 +135,7 @@ class JobManager(object):
         else:
             try:
                 return object.__getattribute__(self,name)
-            except:
+            except Exception:
                 return None
 
     def _printStatus(self):
@@ -188,7 +185,7 @@ class JobManager(object):
                     line = f.readline()
                 f.close()
                 return node_info
-            except:
+            except Exception:
                 self._exit("Unable to process nodefile %s" % nodefile)
                 # reset job transport
                 self.transport = None
@@ -529,7 +526,7 @@ class JobManager(object):
                 # the _launchReplica function is implemented by
                 # MD engine modules
                 status = self._launchReplica(k,self.status[k]['cycle_current'])
-                if status != None:
+                if status is not None:
                     self.status[k]['running_status'] = 'R'
 
     def doExchanges(self):

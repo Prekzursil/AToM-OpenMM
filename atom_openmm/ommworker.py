@@ -1,25 +1,25 @@
 from __future__ import print_function
 from __future__ import division
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 """
 Multiprocessing job transport for AsyncRE/OpenMM
 """
-import os, re, sys, time, shutil, copy, random, signal
+import os, re, time, signal
 import multiprocessing as mp
 #from multiprocessing import Process, Queue, Event
-import logging
 
-import openmm as mm
 from openmm.app import *
 from openmm import *
 from openmm.unit import *
-from datetime import datetime
 
 from atom_openmm.ommreplica import *
 from atom_openmm.ommsystem import *
 
-from atom_openmm.utils.AtomUtils import AtomUtils
 
-from contextlib import contextmanager
 
 class OMMWorker(object):
     # OpenMM worker to run a replica in a process controlling one device
@@ -281,8 +281,8 @@ class OMMWorker(object):
         try:
             import setproctitle
             setproctitle.setproctitle("AToM worker")
-        except:
-            pass
+        except Exception:
+            logger.debug("suppressed exception", exc_info=True)
         
         startedSignal.clear()
         readySignal.clear()
